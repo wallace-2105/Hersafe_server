@@ -1,37 +1,25 @@
 const express = require('express');
-const { MongoClient } = require('mongodb');
-const dns = require('node:dns');
+const connectDB = require('./db');
 require('dotenv').config();
 
-// Força o Node.js a usar os servidores DNS do Google para evitar erros de conexão SRV com o MongoDB Atlas
-dns.setServers(['8.8.8.8', '8.8.4.4']);
-
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Conecta ao MongoDB
+connectDB();
+
+// Middlewares globais
 app.use(express.json());
 
-// Conexão com o MongoDB
-const uri = process.env.MONGO_URI;
-const client = new MongoClient(uri);
-
-async function run() {
-    try {
-        await client.connect();
-        console.log("Conectado ao MongoDB");
-    } finally {
-        await client.close();
-    }
-}
-run().catch(console.dir);
-
-// Rota de teste
+// Rota de saúde
 app.get('/', (req, res) => {
-    res.send('Servidor rodando 🚀');
+    res.json({ status: 'ok', mensagem: 'Servidor HERSAFE rodando 🚀' });
 });
+
+// Rotas
+app.use('/api/usuarios', require('./routes/userRoutes'));
 
 // Subir servidor
 app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
