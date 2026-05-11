@@ -135,13 +135,22 @@ const atualizarUsuario = async (req, res) => {
         const { nome, email, telefone, contatoDeEmergencia, meusLocais } = req.body;
 
         // Impede que outro usuário edite um perfil que não é o dele
-        if (req.userId !== req.params.id) {
+        if (String(req.userId) !== String(req.params.id)) {
             return res.status(403).json({ mensagem: 'Acesso negado.' });
         }
 
+        const dadosAtualizados = {};
+        if (nome !== undefined) dadosAtualizados.nome = nome;
+        if (email !== undefined) dadosAtualizados.email = email;
+        if (telefone !== undefined) dadosAtualizados.telefone = telefone;
+        if (contatoDeEmergencia !== undefined) {
+            dadosAtualizados.contatoDeEmergencia = contatoDeEmergencia;
+        }
+        if (meusLocais !== undefined) dadosAtualizados.meusLocais = meusLocais;
+
         const usuario = await User.findByIdAndUpdate(
             req.params.id,
-            { nome, email, telefone, contatoDeEmergencia, meusLocais },
+            dadosAtualizados,
             { new: true, runValidators: true }
         ).select('-__v');
 

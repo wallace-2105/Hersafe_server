@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 // Conecta ao MongoDB
 connectDB();
@@ -20,6 +21,6 @@ app.get('/', (req, res) => {
 app.use('/api/usuarios', require('./routes/userRoutes'));
 
 // Subir servidor
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando na porta ${PORT}`);
+app.listen(PORT, HOST, () => {
+    console.log(`🚀 Servidor rodando em http://${HOST}:${PORT}`);
 });
