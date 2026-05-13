@@ -2,10 +2,15 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const LocalSchema = new mongoose.Schema({
-    nome: { type: String, required: true },
+    nome: { type: String },
     endereco: { type: String, required: true },
     latitude: { type: Number },
     longitude: { type: Number },
+    tipo: { 
+        type: String, 
+        enum: ['trabalho', 'academia', 'faculdade', 'escola', 'casa', 'casa passeio'], 
+        required: true 
+    }
 }, { _id: true });
 
 const UserSchema = new mongoose.Schema(
