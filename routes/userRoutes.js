@@ -9,6 +9,7 @@ const {
     obterUsuario,
     atualizarUsuario,
     deletarUsuario,
+    atualizarLocalizacao,
 } = require('../controllers/userController');
 
 const authMiddleware = require('../middlewares/authMiddleware');
@@ -20,6 +21,7 @@ router.post('/login', login);
 // ─── Rotas protegidas (JWT obrigatório) ────────
 router.get('/perfil', authMiddleware, obterPerfil);
 router.get('/', authMiddleware, listarUsuarios);
+router.put('/localizacao', authMiddleware, atualizarLocalizacao);
 router.get('/:id', authMiddleware, obterUsuario);
 router.put('/:id', authMiddleware, atualizarUsuario);
 router.delete('/:id', authMiddleware, deletarUsuario);

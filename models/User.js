@@ -47,6 +47,11 @@ const UserSchema = new mongoose.Schema(
             type: [LocalSchema],
             default: [],
         },
+        ultimaLocalizacao: {
+            latitude: { type: Number },
+            longitude: { type: Number },
+            atualizadoEm: { type: Date }
+        }
     },
     { timestamps: true }
 );

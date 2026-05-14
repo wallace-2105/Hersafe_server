@@ -19,6 +19,8 @@ app.get('/', (req, res) => {
 
 // Rotas
 app.use('/api/usuarios', require('./routes/userRoutes'));
+app.use('/api/grupos', require('./routes/groupRoutes'));
+app.use('/api/convites', require('./routes/invitationRoutes'));
 
 // Subir servidor
 app.listen(PORT, HOST, () => {

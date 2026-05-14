@@ -106,10 +106,19 @@ const obterPerfil = async (req, res) => {
     }
 };
 
-// GET /api/usuarios  (lista todos — protegido)
+// GET /api/usuarios  (lista todos — protegido, permite busca por nome)
 const listarUsuarios = async (req, res) => {
     try {
-        const usuarios = await User.find().select('-__v');
+        const { nome } = req.query;
+        let query = {};
+        if (nome) {
+            query.nome = { $regex: new RegExp(nome, 'i') }; // Busca case-insensitive
+        }
+        
+        // Não retornar a si mesmo na busca (opcional, mas recomendado)
+        query._id = { $ne: req.userId };
+
+        const usuarios = await User.find(query).select('-__v');
         return res.status(200).json({ total: usuarios.length, usuarios });
     } catch (error) {
         return res.status(500).json({ mensagem: 'Erro interno.', erro: error.message });
@@ -182,6 +191,37 @@ const deletarUsuario = async (req, res) => {
     }
 };
 
+// PUT /api/usuarios/localizacao
+const atualizarLocalizacao = async (req, res) => {
+    try {
+        const { latitude, longitude } = req.body;
+
+        if (latitude === undefined || longitude === undefined) {
+            return res.status(400).json({ mensagem: 'Latitude e longitude são obrigatórias.' });
+        }
+
+        const usuario = await User.findByIdAndUpdate(
+            req.userId,
+            {
+                ultimaLocalizacao: {
+                    latitude,
+                    longitude,
+                    atualizadoEm: new Date()
+                }
+            },
+            { new: true }
+        ).select('-__v');
+
+        if (!usuario) {
+            return res.status(404).json({ mensagem: 'Usuário não encontrado.' });
+        }
+
+        return res.status(200).json({ mensagem: 'Localização atualizada com sucesso.', ultimaLocalizacao: usuario.ultimaLocalizacao });
+    } catch (error) {
+        return res.status(500).json({ mensagem: 'Erro interno.', erro: error.message });
+    }
+};
+
 module.exports = {
     registrar,
     login,
@@ -190,4 +230,5 @@ module.exports = {
     obterUsuario,
     atualizarUsuario,
     deletarUsuario,
+    atualizarLocalizacao,
 };
