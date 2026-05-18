@@ -118,8 +118,21 @@ const listarUsuarios = async (req, res) => {
         // Não retornar a si mesmo na busca (opcional, mas recomendado)
         query._id = { $ne: req.userId };
 
-        const usuarios = await User.find(query).select('-__v');
-        return res.status(200).json({ total: usuarios.length, usuarios });
+        const usuarios = await User.find(query).select('-__v -senha');
+        
+        // Mapeia para incluir campo 'id' explícito (compatível com o frontend)
+        const usuariosMapeados = usuarios.map(u => ({
+            id: u._id,
+            _id: u._id,
+            nome: u.nome,
+            email: u.email,
+            telefone: u.telefone,
+            contatoDeEmergencia: u.contatoDeEmergencia,
+            meusLocais: u.meusLocais,
+            ultimaLocalizacao: u.ultimaLocalizacao,
+        }));
+        
+        return res.status(200).json({ total: usuariosMapeados.length, usuarios: usuariosMapeados });
     } catch (error) {
         return res.status(500).json({ mensagem: 'Erro interno.', erro: error.message });
     }
